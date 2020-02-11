@@ -8,6 +8,11 @@ csvpath = os.path.join('budget_data.csv')
 date = []
 profit_losses = []
 sumofb = 0
+total_Avg_change = 0
+last_num =0
+change_average = {}
+months = []
+
 
 
 #define the function 
@@ -26,6 +31,9 @@ with open("budget_data.csv", newline="") as csvfile:
         date.append(row[0])
         profit_losses.append(int(row[1]))
         sumofb = sumofb + int(row[1])
+        # monthly change
+        change_average[row[0]] = int(row[1]) - last_num
+        last_num = int(row[1])
 
 #create calculation variables
 total_months = len(date)
@@ -36,38 +44,40 @@ greatest_decrease_month = date[0]
 profit_losses = 0
 
 
-#For loop to go through to find the greatest inc/dec and allocated month
-for i in range(profit_losses):
-    if profit_losses[i] >= greatest_increase:
-        greatest_increase = profit_losses[i]
-        greatest_increase_month = date[i]
-    elif profit_losses[i] <= greatest_decrease:
-        greatest_decrease = profit_losses[i]
-        greatest_decrease_month = date[i]
-    
-    
 
 #Calculate the average change
-average_change = round(sumofb/total_months, 2)
+
+for key, value in change_average.items():
+    if key == date[0]:
+        num = 0
+    else:
+        total_Avg_change = total_Avg_change + value
     
+
+  #For loop to go through to find the greatest inc/dec and allocated month  
+greatest_increase = max(zip(change_average.values(), change_average.keys()))
+greatest_decrease = min(zip(change_average.values(), change_average.keys()))
+greatest_decrease_month = (greatest_decrease[1] + "($" + str(int(greatest_decrease[0]))+")")
+greatest_increase_month = (greatest_increase[1] + "($" + str(int(greatest_increase[0]))+")")
+
 #Summary
 print("Financial Analysis")
 print(f"Total Months: {total_months}")
 print(f"Total: ${sumofb}")
-print(f"Average Change: ${average_change}")
-print(f"Greatest Increase in Profits: {greatest_increase_month} + (${greatest_increase})")
-print(f"Greatest Decrease in Profits: {greatest_decrease_month} + (${greatest_decrease})")
+print(f"Average Change: ${total_Avg_change}")
+print(f"Greatest Increase in Profits: {greatest_increase_month}")
+print(f"Greatest Decrease in Profits: {greatest_decrease_month}")
 
-#Remove the # once results are accurate
+
 
 #create a text find capturing the results
-#new_file = open("PyBank_Results.txt", "w")
-#new_file.write("Financial Analysis /n")
-#new_file.write(f"Total Months: {total_months} /n")
-#new_file.write(f"Total: ${sumofb} /n")
-#new_file.write(f"Average Change: ${average_change} /n")
-#new_file.write(f"Greatest Increase in Profits: {greatest_increase_month} + (${greatest_increase}) /n")
-#new_file.write(f"Greatest Decrease in Profits: {greatest_decrease_month} + (${greatest_decrease}) /n")   
+new_file = open("PyBank_Results.txt", "w")
+new_file.write("Financial Analysis /n")
+new_file.write(f"Total Months: {total_months} /n")
+new_file.write(f"Total: ${sumofb} /n")
+new_file.write(f"Average Change: ${total_Avg_change} /n")
+new_file.write(f"Greatest Increase in Profits: {greatest_increase_month} + (${greatest_increase}) /n")
+new_file.write(f"Greatest Decrease in Profits: {greatest_decrease_month} + (${greatest_decrease}) /n")   
     
 
 
